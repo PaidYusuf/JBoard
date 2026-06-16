@@ -49,12 +49,14 @@ async function getTasks(req, res, next) {
     const { status } = req.query;
 
     const { rows } = await pool.query(
-      `SELECT t.*, cb.fname AS creator_fname, cb.lname AS creator_lname
-       FROM tasks t
-       JOIN users cb ON t.created_by = cb.user_id
-       WHERE t.user_id = $1
-         AND ($2::text IS NULL OR t.status = $2)
-       ORDER BY t.end_date ASC`,
+      `SELECT t.*, cb.fname AS creator_fname, cb.lname AS creator_lname,
+              p.project_name
+         FROM tasks t
+         JOIN users cb ON t.created_by = cb.user_id
+         LEFT JOIN projects p ON t.project_id = p.project_id
+        WHERE t.user_id = $1
+          AND ($2::text IS NULL OR t.status = $2)
+        ORDER BY t.end_date ASC`,
       [req.user.user_id, status ?? null]
     );
 

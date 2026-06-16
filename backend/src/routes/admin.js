@@ -32,5 +32,7 @@ router.get   ('/projects/:projectId/members',                pc.getProjectMember
 router.post  ('/projects/:projectId/members',                pc.addProjectMember);
 router.delete('/projects/:projectId/members/:userId',        pc.removeProjectMember);
 router.get   ('/projects/:projectId/logs',                   pc.getProjectLogs);
+router.get   ('/projects/:projectId/tasks',                  pc.getProjectTasks);
+router.post  ('/projects/:projectId/tasks',                  pc.createProjectTask);
 
 module.exports = router;

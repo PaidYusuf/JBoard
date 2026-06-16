@@ -14,24 +14,27 @@ function sha256(value) {
 // ── GET /api/admin/tasks ─────────────────────────────────────────────────────
 async function getTasks(req, res, next) {
   try {
-    const { status, userId, startDate, endDate } = req.query;
+    const { status, userId, startDate, endDate, projectId } = req.query;
     const groupId = req.user.group_id;
 
     const { rows } = await pool.query(
       `SELECT
          t.*,
          u.fname, u.lname, u.email,
-         cb.fname AS creator_fname, cb.lname AS creator_lname
+         cb.fname AS creator_fname, cb.lname AS creator_lname,
+         p.project_name
        FROM tasks t
        JOIN users u  ON t.user_id    = u.user_id
        JOIN users cb ON t.created_by = cb.user_id
+       LEFT JOIN projects p ON t.project_id = p.project_id
        WHERE t.group_id = $1
-         AND ($2::text IS NULL OR t.status    = $2)
-         AND ($3::int  IS NULL OR t.user_id   = $3)
+         AND ($2::text IS NULL OR t.status     = $2)
+         AND ($3::int  IS NULL OR t.user_id    = $3)
          AND ($4::date IS NULL OR t.start_date >= $4)
-         AND ($5::date IS NULL OR t.end_date  <= $5)
+         AND ($5::date IS NULL OR t.end_date   <= $5)
+         AND ($6::int  IS NULL OR t.project_id  = $6)
        ORDER BY t.created_at DESC`,
-      [groupId, status ?? null, userId ?? null, startDate ?? null, endDate ?? null]
+      [groupId, status ?? null, userId ?? null, startDate ?? null, endDate ?? null, projectId ?? null]
     );
 
     res.json(rows);

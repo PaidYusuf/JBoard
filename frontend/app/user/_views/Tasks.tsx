@@ -10,6 +10,7 @@ interface TaskRow {
   end_date: string;
   creator_fname: string;
   creator_lname: string;
+  project_name: string | null;
 }
 
 interface FileRecord {
@@ -245,6 +246,7 @@ export default function Tasks() {
                   <th>Task</th>
                   <th>Status</th>
                   <th>Due Date</th>
+                  <th>Project</th>
                   <th>Assigned By</th>
                   <th></th>
                 </tr>
@@ -273,6 +275,9 @@ export default function Tasks() {
                     </td>
                     <td style={{ fontSize: 13, color: isOverdue(t) ? 'var(--color-error)' : 'var(--color-text-muted)' }}>
                       {t.end_date.slice(0, 10)}
+                    </td>
+                    <td style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>
+                      {t.project_name ?? <span style={{ fontStyle: 'italic' }}>—</span>}
                     </td>
                     <td style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>
                       {t.creator_fname} {t.creator_lname}

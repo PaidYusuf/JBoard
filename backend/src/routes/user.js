@@ -20,5 +20,6 @@ router.get   ('/gantt',                          c.getGantt);
 router.get   ('/projects',                              pc.getUserProjects);
 router.get   ('/projects/:projectId/logs',              pc.getUserProjectLogs);
 router.post  ('/projects/:projectId/logs',              pc.upsertTodayLog);
+router.get   ('/projects/:projectId/tasks',             pc.getUserProjectTasks);
 
 module.exports = router;

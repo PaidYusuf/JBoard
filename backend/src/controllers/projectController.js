@@ -276,11 +276,87 @@ async function assertMembership(projectId, userId, res) {
   return rows[0];
 }
 
+// ── GET /api/admin/projects/:projectId/tasks ──────────────────────────────────
+async function getProjectTasks(req, res, next) {
+  try {
+    const { projectId } = req.params;
+    const { status } = req.query;
+    await assertProjectOwner(projectId, req.user.group_id, res);
+    if (res.headersSent) return;
+
+    const { rows } = await pool.query(
+      `SELECT t.*,
+              u.fname, u.lname, u.email,
+              cb.fname AS creator_fname, cb.lname AS creator_lname
+         FROM tasks t
+         JOIN users u  ON t.user_id    = u.user_id
+         JOIN users cb ON t.created_by = cb.user_id
+        WHERE t.project_id = $1
+          AND ($2::text IS NULL OR t.status = $2)
+        ORDER BY t.created_at DESC`,
+      [projectId, status ?? null]
+    );
+    res.json(rows);
+  } catch (err) { next(err); }
+}
+
+// ── POST /api/admin/projects/:projectId/tasks ─────────────────────────────────
+async function createProjectTask(req, res, next) {
+  try {
+    const { projectId } = req.params;
+    const { assignedUserId, taskName, taskDetails, startDate, endDate } = req.body;
+    const groupId = req.user.group_id;
+
+    if (!assignedUserId || !taskName || !startDate || !endDate) {
+      return res.status(400).json({ error: 'assignedUserId, taskName, startDate, and endDate are required' });
+    }
+
+    await assertProjectOwner(projectId, groupId, res);
+    if (res.headersSent) return;
+
+    // Assigned user must be a member of this project
+    const memberCheck = await pool.query(
+      'SELECT user_id FROM project_members WHERE project_id = $1 AND user_id = $2',
+      [projectId, assignedUserId]
+    );
+    if (!memberCheck.rows.length) {
+      return res.status(403).json({ error: 'Assigned user is not a member of this project' });
+    }
+
+    const { rows } = await pool.query(
+      `INSERT INTO tasks (user_id, group_id, created_by, project_id, task_name, task_details, start_date, end_date)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [assignedUserId, groupId, req.user.user_id, projectId, taskName, taskDetails ?? null, startDate, endDate]
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) { next(err); }
+}
+
+// ── GET /api/user/projects/:projectId/tasks ───────────────────────────────────
+async function getUserProjectTasks(req, res, next) {
+  try {
+    const { projectId } = req.params;
+    const project = await assertMembership(projectId, req.user.user_id, res);
+    if (res.headersSent || !project) return;
+
+    const { rows } = await pool.query(
+      `SELECT task_id, task_name, task_details, status, start_date, end_date, updated_at
+         FROM tasks
+        WHERE project_id = $1 AND user_id = $2
+        ORDER BY end_date ASC`,
+      [projectId, req.user.user_id]
+    );
+    res.json(rows);
+  } catch (err) { next(err); }
+}
+
 module.exports = {
   // admin
   getProjects, createProject, updateProject, deleteProject,
   getProjectMembers, addProjectMember, removeProjectMember,
   getProjectLogs,
+  getProjectTasks, createProjectTask,
   // user
   getUserProjects, getUserProjectLogs, upsertTodayLog,
+  getUserProjectTasks,
 };

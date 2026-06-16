@@ -1,40 +1,36 @@
 'use client';
 import { useState } from 'react';
 import DashboardLayout, { NavItem } from '@/components/DashboardLayout';
-import Tasks      from './_views/Tasks';
 import Gantt      from './_views/Gantt';
 import Statistics from './_views/Statistics';
 import Members    from './_views/Members';
 import Projects   from './_views/Projects';
 
-type View = 'tasks' | 'gantt' | 'statistics' | 'members' | 'projects';
+type View = 'projects' | 'gantt' | 'statistics' | 'members';
 
 const NAV: NavItem[] = [
-  { id: 'tasks',      icon: '📋', label: 'Tasks'      },
+  { id: 'projects',   icon: '📁', label: 'Projects'   },
   { id: 'gantt',      icon: '📅', label: 'Gantt'      },
   { id: 'statistics', icon: '📊', label: 'Statistics' },
   { id: 'members',    icon: '👥', label: 'Members'    },
-  { id: 'projects',   icon: '📁', label: 'Projects'   },
 ];
 
 const TITLES: Record<View, string> = {
-  tasks:      'Tasks',
+  projects:   'Projects',
   gantt:      'Gantt Chart',
   statistics: 'Statistics',
   members:    'Members & Invites',
-  projects:   'Projects',
 };
 
 const SUBTITLES: Record<View, string> = {
-  tasks:      'Create, assign and manage tasks for your team',
-  gantt:      'Visual timeline of all tasks in your group',
+  projects:   'Create projects, assign members, and manage tasks inside each project',
+  gantt:      'Visual timeline of all tasks across all projects',
   statistics: 'Per-member task completion breakdown',
   members:    'Manage team members and generate invite codes',
-  projects:   'Manage projects, assign members, and review daily logs',
 };
 
 export default function AdminPage() {
-  const [view, setView] = useState<View>('tasks');
+  const [view, setView] = useState<View>('projects');
 
   return (
     <DashboardLayout
@@ -51,11 +47,10 @@ export default function AdminPage() {
       </header>
 
       <div className="page-body">
-        {view === 'tasks'      && <Tasks />}
+        {view === 'projects'   && <Projects />}
         {view === 'gantt'      && <Gantt />}
         {view === 'statistics' && <Statistics />}
         {view === 'members'    && <Members />}
-        {view === 'projects'   && <Projects />}
       </div>
     </DashboardLayout>
   );
