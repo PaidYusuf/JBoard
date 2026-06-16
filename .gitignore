@@ -1,0 +1,37 @@
+# Environment — never commit real secrets
+.env
+.env.production
+!.env.example
+!.env.production.example
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+
+# Production build
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Uploads (runtime data, not source)
+backend/uploads/
+
+# SSL certificates — provisioned on the server, never in git
+nginx/ssl/
