@@ -139,7 +139,7 @@ export default function Members() {
                     {new Date(m.created_at).toLocaleDateString()}
                   </td>
                   <td>
-                    {m.user_id !== me?.userId && (
+                    {m.user_id !== Number(me?.userId) && (
                       <button className="action-btn action-btn-danger" onClick={() => handleRemove(m)}>
                         Remove
                       </button>
