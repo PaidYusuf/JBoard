@@ -124,7 +124,7 @@ export default function Members() {
                 <tr key={m.user_id}>
                   <td style={{ fontWeight: 500 }}>
                     {m.fname} {m.lname}
-                    {m.user_id === me?.userId && (
+                    {m.user_id === Number(me?.userId) && (
                       <span className="badge badge-purple" style={{ marginLeft: 8, fontSize: 11 }}>You</span>
                     )}
                   </td>
