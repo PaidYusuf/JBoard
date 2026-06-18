@@ -17,6 +17,10 @@ router.get   ('/tasks/:taskId/files',            c.getFiles);
 router.delete('/tasks/:taskId/files/:fileId',    c.deleteFile);
 router.get   ('/gantt',                          c.getGantt);
 
+router.get   ('/profile',                               c.getProfile);
+router.patch ('/profile',                               c.updateProfile);
+router.patch ('/profile/password',                      c.changePassword);
+
 router.get   ('/projects',                              pc.getUserProjects);
 router.get   ('/projects/:projectId/logs',              pc.getUserProjectLogs);
 router.post  ('/projects/:projectId/logs',              pc.upsertTodayLog);

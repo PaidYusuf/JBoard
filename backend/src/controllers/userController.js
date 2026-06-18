@@ -2,6 +2,7 @@ const fs           = require('fs');
 const path         = require('path');
 const { v4: uuidv4 } = require('uuid');
 const sanitizeHtml = require('sanitize-html');
+const bcrypt       = require('bcrypt');
 const pool         = require('../db/pool');
 const { logEvent, LOG_TYPES } = require('../services/logger');
 
@@ -247,10 +248,74 @@ async function getGantt(req, res, next) {
   }
 }
 
+// ── GET /api/user/profile ────────────────────────────────────────────────────
+async function getProfile(req, res, next) {
+  try {
+    const { rows } = await pool.query(
+      'SELECT user_id, fname, lname, email, role FROM users WHERE user_id = $1',
+      [req.user.user_id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'User not found' });
+    res.json(rows[0]);
+  } catch (err) { next(err); }
+}
+
+// ── PATCH /api/user/profile ──────────────────────────────────────────────────
+async function updateProfile(req, res, next) {
+  try {
+    const { fname, lname, email } = req.body;
+    if (!fname || !lname || !email) {
+      return res.status(400).json({ error: 'fname, lname, and email are required' });
+    }
+
+    const emailCheck = await pool.query(
+      'SELECT user_id FROM users WHERE email = $1 AND user_id != $2',
+      [email, req.user.user_id]
+    );
+    if (emailCheck.rows.length) return res.status(409).json({ error: 'Email already in use by another account' });
+
+    const { rows } = await pool.query(
+      `UPDATE users SET fname = $1, lname = $2, email = $3
+       WHERE user_id = $4
+       RETURNING user_id, fname, lname, email, role`,
+      [fname.trim(), lname.trim(), email.trim(), req.user.user_id]
+    );
+    res.json(rows[0]);
+  } catch (err) { next(err); }
+}
+
+// ── PATCH /api/user/profile/password ────────────────────────────────────────
+async function changePassword(req, res, next) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'currentPassword and newPassword are required' });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters' });
+    }
+
+    const { rows } = await pool.query(
+      'SELECT password_hash FROM users WHERE user_id = $1',
+      [req.user.user_id]
+    );
+    const match = await bcrypt.compare(currentPassword, rows[0].password_hash);
+    if (!match) return res.status(401).json({ error: 'Current password is incorrect' });
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await pool.query(
+      'UPDATE users SET password_hash = $1 WHERE user_id = $2',
+      [newHash, req.user.user_id]
+    );
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) { next(err); }
+}
+
 module.exports = {
   getTasks, getTask,
   updateStatus,
   saveReport,
   uploadFile, getFiles, deleteFile,
   getGantt,
+  getProfile, updateProfile, changePassword,
 };

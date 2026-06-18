@@ -66,9 +66,14 @@ export default function DashboardLayout({ children, nav, activeView, onNavigate,
         </nav>
 
         <div className="sidebar-footer">
-          <div className="sidebar-user">{user.fname} {user.lname}</div>
-          <div className="sidebar-user-email">{user.email}</div>
-          <button className="sidebar-signout" onClick={logout}>
+          <button
+            onClick={() => router.push('/profile')}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left', width: '100%' }}
+          >
+            <div className="sidebar-user">{user.fname} {user.lname}</div>
+            <div className="sidebar-user-email">{user.email}</div>
+          </button>
+          <button className="sidebar-signout" style={{ marginTop: 8 }} onClick={logout}>
             ↩ Sign out
           </button>
         </div>
