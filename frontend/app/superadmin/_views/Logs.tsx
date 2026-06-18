@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
+import Icon from '@/components/Icon';
 
 interface LogEntry {
   log_id: number;
@@ -148,7 +149,7 @@ export default function Logs() {
                     <tr>
                       <td colSpan={4}>
                         <div className="empty-state">
-                          <div className="empty-icon">📄</div>
+                          <div className="empty-icon"><Icon name="file-text" size={26} /></div>
                           <div className="empty-title">No logs found</div>
                           <div>Try adjusting the filters.</div>
                         </div>

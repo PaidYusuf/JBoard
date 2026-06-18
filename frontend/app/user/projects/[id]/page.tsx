@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout, { NavItem } from '@/components/DashboardLayout';
+import Icon from '@/components/Icon';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Project {
@@ -72,10 +73,10 @@ function isOverdue(t: { status: string; end_date: string }) {
 }
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 
-const NAV = [
-  { id: 'back',    icon: '←',  label: 'Back'      },
-  { id: 'tasks',   icon: '📋', label: 'My Tasks'  },
-  { id: 'log',     icon: '📝', label: 'Daily Log' },
+const NAV: NavItem[] = [
+  { id: 'back',    icon: 'arrow-left',   label: 'Back'      },
+  { id: 'tasks',   icon: 'check-square', label: 'My Tasks'  },
+  { id: 'log',     icon: 'note',         label: 'Daily Log' },
 ];
 
 type Tab = 'tasks' | 'log';
@@ -362,7 +363,7 @@ export default function UserProjectPage() {
                       {tasks.length === 0 ? (
                         <tr><td colSpan={4}>
                           <div className="empty-state">
-                            <div className="empty-icon">📋</div>
+                            <div className="empty-icon"><Icon name="check-square" size={26} /></div>
                             <div className="empty-title">No tasks assigned to you</div>
                             <div>Your admin hasn't assigned any tasks in this project yet.</div>
                           </div>

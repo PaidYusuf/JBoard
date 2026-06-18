@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback, FormEvent } from 'react';
 import Modal from '@/components/Modal';
+import Icon from '@/components/Icon';
 
 interface Member { user_id: number; fname: string; lname: string; email: string; }
 
@@ -276,7 +277,7 @@ export default function Tasks() {
                 {tasks.length === 0 ? (
                   <tr><td colSpan={7}>
                     <div className="empty-state">
-                      <div className="empty-icon">📋</div>
+                      <div className="empty-icon"><Icon name="check-square" size={26} /></div>
                       <div className="empty-title">No tasks found</div>
                       <div>Create a task or adjust the filters.</div>
                     </div>

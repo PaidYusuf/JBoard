@@ -2,12 +2,12 @@
 import { useEffect, useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout, { NavItem } from '@/components/DashboardLayout';
 
-const NAV = [
-  { id: 'back',     icon: '←',  label: 'Back'          },
-  { id: 'profile',  icon: '👤', label: 'My Profile'    },
-  { id: 'password', icon: '🔒', label: 'Change Password'},
+const NAV: NavItem[] = [
+  { id: 'back',     icon: 'arrow-left', label: 'Back'           },
+  { id: 'profile',  icon: 'user',       label: 'My Profile'     },
+  { id: 'password', icon: 'lock',       label: 'Change Password'},
 ];
 
 type Tab = 'profile' | 'password';

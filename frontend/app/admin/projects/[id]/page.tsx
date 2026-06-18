@@ -1,8 +1,9 @@
 'use client';
 import { useEffect, useState, useCallback, FormEvent } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout, { NavItem } from '@/components/DashboardLayout';
 import Modal from '@/components/Modal';
+import Icon from '@/components/Icon';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Project {
@@ -87,11 +88,11 @@ function todayStr() { return new Date().toISOString().slice(0, 10); }
 const TASK_EMPTY = { assignedUserId: '', taskName: '', taskDetails: '', startDate: '', endDate: '' };
 
 // ── Nav (same as admin dashboard) ─────────────────────────────────────────────
-const NAV = [
-  { id: 'back',       icon: '←',  label: 'Back'       },
-  { id: 'tasks',      icon: '📋', label: 'Tasks'      },
-  { id: 'members',    icon: '👥', label: 'Members'    },
-  { id: 'logs',       icon: '📝', label: 'Daily Logs' },
+const NAV: NavItem[] = [
+  { id: 'back',       icon: 'arrow-left',   label: 'Back'       },
+  { id: 'tasks',      icon: 'check-square', label: 'Tasks'      },
+  { id: 'members',    icon: 'users',        label: 'Members'    },
+  { id: 'logs',       icon: 'note',         label: 'Daily Logs' },
 ];
 
 type Tab = 'tasks' | 'members' | 'logs';
@@ -368,7 +369,7 @@ export default function ProjectDetailPage() {
                       {tasks.length === 0 ? (
                         <tr><td colSpan={6}>
                           <div className="empty-state">
-                            <div className="empty-icon">📋</div>
+                            <div className="empty-icon"><Icon name="check-square" size={26} /></div>
                             <div className="empty-title">No tasks yet</div>
                             <div>Create the first task for this project.</div>
                           </div>
@@ -537,7 +538,7 @@ export default function ProjectDetailPage() {
 
               {projMembers.length === 0 && nonMembers.length === 0 && (
                 <div className="empty-state">
-                  <div className="empty-icon">👥</div>
+                  <div className="empty-icon"><Icon name="users" size={26} /></div>
                   <div className="empty-title">No group members yet</div>
                   <div>Invite members to your group first from the main admin dashboard.</div>
                 </div>

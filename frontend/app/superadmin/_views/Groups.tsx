@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState, FormEvent } from 'react';
 import Modal from '@/components/Modal';
+import Icon from '@/components/Icon';
 
 interface Plan {
   plan_id: number;
@@ -215,7 +216,7 @@ export default function Groups() {
                 <tr>
                   <td colSpan={7}>
                     <div className="empty-state">
-                      <div className="empty-icon">🏢</div>
+                      <div className="empty-icon"><Icon name="building" size={26} /></div>
                       <div className="empty-title">No groups yet</div>
                       <div>Create the first group to get started.</div>
                     </div>

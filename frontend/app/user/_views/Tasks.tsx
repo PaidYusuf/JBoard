@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState, useCallback, useRef } from 'react';
+import Icon from '@/components/Icon';
 
 interface TaskRow {
   task_id: number;
@@ -255,7 +256,7 @@ export default function Tasks() {
                 {tasks.length === 0 ? (
                   <tr><td colSpan={5}>
                     <div className="empty-state">
-                      <div className="empty-icon">📋</div>
+                      <div className="empty-icon"><Icon name="check-square" size={26} /></div>
                       <div className="empty-title">No tasks assigned</div>
                       <div>Tasks assigned to you by your admin will appear here.</div>
                     </div>

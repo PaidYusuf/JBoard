@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Icon, { IconName } from '@/components/Icon';
 
 interface Stats {
   total_groups: string;
@@ -27,13 +28,13 @@ export default function Overview() {
   if (error) return <div className="alert alert-error">{error}</div>;
   if (!stats) return null;
 
-  const cards = [
-    { label: 'Company Groups', value: stats.total_groups, icon: '🏢' },
-    { label: 'Total Users',    value: stats.total_users,   icon: '👥' },
-    { label: 'Active Users',   value: stats.active_users,  icon: '✅' },
-    { label: 'Total Tasks',    value: stats.total_tasks,   icon: '📋' },
-    { label: 'In Progress',    value: stats.active_tasks,  icon: '⚡' },
-    { label: 'Completed',      value: stats.completed_tasks, icon: '🏁' },
+  const cards: { label: string; value: string; icon: IconName; tint: string }[] = [
+    { label: 'Company Groups', value: stats.total_groups,    icon: 'building',     tint: 'is-purple' },
+    { label: 'Total Users',    value: stats.total_users,     icon: 'users',        tint: 'is-blue'   },
+    { label: 'Active Users',   value: stats.active_users,    icon: 'user-check',   tint: 'is-green'  },
+    { label: 'Total Tasks',    value: stats.total_tasks,     icon: 'check-square', tint: 'is-purple' },
+    { label: 'In Progress',    value: stats.active_tasks,    icon: 'activity',     tint: 'is-amber'  },
+    { label: 'Completed',      value: stats.completed_tasks, icon: 'flag',         tint: 'is-green'  },
   ];
 
   return (
@@ -41,7 +42,7 @@ export default function Overview() {
       <div className="stats-grid">
         {cards.map(c => (
           <div key={c.label} className="stat-card">
-            <div style={{ fontSize: 24, marginBottom: 8 }}>{c.icon}</div>
+            <div className={`stat-icon ${c.tint}`}><Icon name={c.icon} size={21} /></div>
             <div className="stat-value">{c.value}</div>
             <div className="stat-label">{c.label}</div>
           </div>

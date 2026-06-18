@@ -9,10 +9,10 @@ import Logs     from './_views/Logs';
 type View = 'overview' | 'groups' | 'plans' | 'logs';
 
 const NAV: NavItem[] = [
-  { id: 'overview', icon: '📊', label: 'Overview'  },
-  { id: 'groups',   icon: '🏢', label: 'Groups'    },
-  { id: 'plans',    icon: '💳', label: 'Plans'     },
-  { id: 'logs',     icon: '📄', label: 'Logs'      },
+  { id: 'overview', icon: 'dashboard',   label: 'Overview'  },
+  { id: 'groups',   icon: 'building',    label: 'Groups'    },
+  { id: 'plans',    icon: 'credit-card', label: 'Plans'     },
+  { id: 'logs',     icon: 'file-text',   label: 'Logs'      },
 ];
 
 const TITLES: Record<View, string> = {

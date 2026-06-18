@@ -1,16 +1,16 @@
 'use client';
 import { useState } from 'react';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout, { NavItem } from '@/components/DashboardLayout';
 import Tasks    from './_views/Tasks';
 import Gantt    from './_views/Gantt';
 import Projects from './_views/Projects';
 
 type View = 'tasks' | 'gantt' | 'projects';
 
-const NAV = [
-  { id: 'tasks',    label: 'My Tasks',    icon: '✅' },
-  { id: 'gantt',    label: 'My Gantt',    icon: '📅' },
-  { id: 'projects', label: 'Projects',    icon: '📁' },
+const NAV: NavItem[] = [
+  { id: 'tasks',    label: 'My Tasks', icon: 'check-square' },
+  { id: 'gantt',    label: 'My Gantt', icon: 'calendar'     },
+  { id: 'projects', label: 'Projects', icon: 'folder'       },
 ];
 
 const TITLES: Record<View, string>    = { tasks: 'My Tasks', gantt: 'My Gantt Chart', projects: 'My Projects' };

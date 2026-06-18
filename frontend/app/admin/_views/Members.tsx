@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/Modal';
+import Icon from '@/components/Icon';
 
 interface Member {
   user_id: number;
@@ -125,7 +126,7 @@ export default function Members() {
               {members.length === 0 ? (
                 <tr><td colSpan={6}>
                   <div className="empty-state">
-                    <div className="empty-icon">👥</div>
+                    <div className="empty-icon"><Icon name="users" size={26} /></div>
                     <div className="empty-title">No members yet</div>
                     <div>Generate an invite code to add your first team member.</div>
                   </div>
@@ -186,7 +187,7 @@ export default function Members() {
               {codes.length === 0 ? (
                 <tr><td colSpan={5}>
                   <div className="empty-state">
-                    <div className="empty-icon">🔑</div>
+                    <div className="empty-icon"><Icon name="key" size={26} /></div>
                     <div className="empty-title">No invite codes yet</div>
                     <div>Generate a code to invite team members.</div>
                   </div>

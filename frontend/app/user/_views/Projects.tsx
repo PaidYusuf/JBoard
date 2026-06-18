@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Icon from '@/components/Icon';
 
 interface Project {
   project_id: number;
@@ -51,7 +52,7 @@ export default function Projects() {
   if (projects.length === 0) return (
     <div className="card" style={{ padding: 20 }}>
       <div className="empty-state">
-        <div className="empty-icon">📁</div>
+        <div className="empty-icon"><Icon name="folder" size={26} /></div>
         <div className="empty-title">No projects yet</div>
         <div>Ask your admin to create a project and add you as a member.</div>
       </div>
@@ -70,11 +71,9 @@ export default function Projects() {
           return (
             <div
               key={p.project_id}
-              className="card"
-              style={{ padding: '20px', cursor: 'pointer', transition: 'box-shadow 0.15s' }}
+              className="card card-clickable"
+              style={{ padding: '20px' }}
               onClick={() => router.push(`/user/projects/${p.project_id}`)}
-              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.12)')}
-              onMouseLeave={e => (e.currentTarget.style.boxShadow = '')}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                 <div style={{ fontWeight: 700, fontSize: 16, flex: 1, marginRight: 8 }}>{p.project_name}</div>

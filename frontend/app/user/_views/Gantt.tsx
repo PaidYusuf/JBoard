@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Icon from '@/components/Icon';
 
 interface GanttTask {
   task_id: number;
@@ -67,7 +68,7 @@ export default function Gantt() {
   if (tasks.length === 0) return (
     <div className="card" style={{ padding: 20 }}>
       <div className="empty-state">
-        <div className="empty-icon">📅</div>
+        <div className="empty-icon"><Icon name="calendar" size={26} /></div>
         <div className="empty-title">No tasks yet</div>
         <div>Tasks assigned to you will appear on the Gantt chart.</div>
       </div>

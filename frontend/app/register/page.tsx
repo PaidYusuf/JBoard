@@ -2,6 +2,7 @@
 import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Icon from '@/components/Icon';
 
 type AccountType = 'company' | 'solo';
 
@@ -101,7 +102,13 @@ export default function RegisterPage() {
             <div className="auth-logo-mark">J</div>
             <span className="auth-logo-text">JBoard</span>
           </div>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
+          <div style={{
+            width: 60, height: 60, margin: '0 auto 16px', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--color-success-bg)', color: 'var(--color-success)',
+          }}>
+            <Icon name="check" size={30} strokeWidth={2.5} />
+          </div>
           <h1 className="auth-title" style={{ marginBottom: 8 }}>Account created!</h1>
           <p className="auth-subtitle" style={{ marginBottom: 28 }}>
             Your account has been set up successfully. Sign in to get started.

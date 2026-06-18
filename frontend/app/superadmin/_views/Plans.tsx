@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState, FormEvent } from 'react';
 import Modal from '@/components/Modal';
+import Icon from '@/components/Icon';
 
 interface Plan {
   plan_id: number;
@@ -143,7 +144,7 @@ export default function Plans() {
                 <tr>
                   <td colSpan={6}>
                     <div className="empty-state">
-                      <div className="empty-icon">💳</div>
+                      <div className="empty-icon"><Icon name="credit-card" size={26} /></div>
                       <div className="empty-title">No plans yet</div>
                     </div>
                   </td>

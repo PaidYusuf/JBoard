@@ -9,10 +9,10 @@ import Projects   from './_views/Projects';
 type View = 'projects' | 'gantt' | 'statistics' | 'members';
 
 const NAV: NavItem[] = [
-  { id: 'projects',   icon: '📁', label: 'Projects'   },
-  { id: 'gantt',      icon: '📅', label: 'Gantt'      },
-  { id: 'statistics', icon: '📊', label: 'Statistics' },
-  { id: 'members',    icon: '👥', label: 'Members'    },
+  { id: 'projects',   icon: 'folder',    label: 'Projects'   },
+  { id: 'gantt',      icon: 'calendar',  label: 'Gantt'      },
+  { id: 'statistics', icon: 'bar-chart', label: 'Statistics' },
+  { id: 'members',    icon: 'users',     label: 'Members'    },
 ];
 
 const TITLES: Record<View, string> = {

@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Modal from '@/components/Modal';
+import Icon from '@/components/Icon';
 
 interface Project {
   project_id: number;
@@ -118,7 +119,7 @@ export default function Projects() {
       {projects.length === 0 ? (
         <div className="card" style={{ padding: 20 }}>
           <div className="empty-state">
-            <div className="empty-icon">📁</div>
+            <div className="empty-icon"><Icon name="folder" size={26} /></div>
             <div className="empty-title">No projects yet</div>
             <div>Create a project, add members, then assign tasks to them.</div>
           </div>
@@ -130,11 +131,9 @@ export default function Projects() {
             return (
               <div
                 key={p.project_id}
-                className="card"
-                style={{ padding: '20px', cursor: 'pointer', transition: 'box-shadow 0.15s' }}
+                className="card card-clickable"
+                style={{ padding: '20px' }}
                 onClick={() => router.push(`/admin/projects/${p.project_id}`)}
-                onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.12)')}
-                onMouseLeave={e => (e.currentTarget.style.boxShadow = '')}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                   <div style={{ fontWeight: 700, fontSize: 16, flex: 1, marginRight: 8 }}>{p.project_name}</div>
@@ -146,8 +145,8 @@ export default function Projects() {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
-                    👥 {p.member_count} member{p.member_count !== 1 ? 's' : ''}
+                  <span style={{ fontSize: 13, color: 'var(--color-text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <Icon name="users" size={15} /> {p.member_count} member{p.member_count !== 1 ? 's' : ''}
                   </span>
                   <div style={{ display: 'flex', gap: 8 }} onClick={e => e.stopPropagation()}>
                     <button className="action-btn action-btn-edit"

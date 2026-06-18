@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Icon from '@/components/Icon';
 
 interface MemberStats {
   user_id: number;
@@ -38,18 +39,22 @@ export default function Statistics() {
       {/* Summary row */}
       <div className="stats-grid" style={{ marginBottom: 24 }}>
         <div className="stat-card">
+          <div className="stat-icon is-blue"><Icon name="users" size={21} /></div>
           <div className="stat-value">{stats.length}</div>
           <div className="stat-label">Team Members</div>
         </div>
         <div className="stat-card">
+          <div className="stat-icon is-purple"><Icon name="check-square" size={21} /></div>
           <div className="stat-value">{totalTasks}</div>
           <div className="stat-label">Total Tasks</div>
         </div>
         <div className="stat-card">
+          <div className="stat-icon is-green"><Icon name="flag" size={21} /></div>
           <div className="stat-value">{totalCompleted}</div>
           <div className="stat-label">Completed</div>
         </div>
         <div className="stat-card">
+          <div className={`stat-icon ${totalOverdue > 0 ? 'is-orange' : ''}`}><Icon name="activity" size={21} /></div>
           <div className="stat-value" style={{ color: totalOverdue > 0 ? 'var(--color-error)' : undefined }}>
             {totalOverdue}
           </div>
@@ -78,7 +83,7 @@ export default function Statistics() {
               {stats.length === 0 ? (
                 <tr><td colSpan={7}>
                   <div className="empty-state">
-                    <div className="empty-icon">📊</div>
+                    <div className="empty-icon"><Icon name="users" size={26} /></div>
                     <div className="empty-title">No members found</div>
                   </div>
                 </td></tr>
