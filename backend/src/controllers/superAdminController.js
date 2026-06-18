@@ -191,6 +191,7 @@ async function deleteUser(req, res, next) {
       return res.status(403).json({ error: 'Cannot delete another superadmin' });
     }
 
+    await pool.query('UPDATE invite_codes SET used_by = NULL WHERE used_by = $1', [userId]);
     await pool.query('DELETE FROM users WHERE user_id = $1', [userId]);
 
     logEvent(req.user.user_id, LOG_TYPES.GROUP, `Deleted user ${userId} (${check.rows[0].email})`);
