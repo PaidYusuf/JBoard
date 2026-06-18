@@ -161,6 +161,43 @@ async function createGroupAdmin(req, res, next) {
   }
 }
 
+// ── GET /api/superadmin/groups/:groupId/users ────────────────────────────────
+async function getGroupUsers(req, res, next) {
+  try {
+    const { groupId } = req.params;
+    const { rows } = await pool.query(
+      `SELECT user_id, fname, lname, email, role, is_active, created_at
+       FROM users WHERE group_id = $1 ORDER BY created_at ASC`,
+      [groupId]
+    );
+    res.json(rows);
+  } catch (err) { next(err); }
+}
+
+// ── DELETE /api/superadmin/users/:userId ─────────────────────────────────────
+async function deleteUser(req, res, next) {
+  try {
+    const { userId } = req.params;
+
+    if (parseInt(userId, 10) === req.user.user_id) {
+      return res.status(400).json({ error: 'You cannot delete yourself' });
+    }
+
+    const check = await pool.query(
+      'SELECT email, role FROM users WHERE user_id = $1', [userId]
+    );
+    if (!check.rows.length) return res.status(404).json({ error: 'User not found' });
+    if (check.rows[0].role === 'superadmin') {
+      return res.status(403).json({ error: 'Cannot delete another superadmin' });
+    }
+
+    await pool.query('DELETE FROM users WHERE user_id = $1', [userId]);
+
+    logEvent(req.user.user_id, LOG_TYPES.GROUP, `Deleted user ${userId} (${check.rows[0].email})`);
+    res.json({ message: 'User deleted' });
+  } catch (err) { next(err); }
+}
+
 // ── GET /api/superadmin/plans ────────────────────────────────────────────────
 async function getPlans(req, res, next) {
   try {
@@ -307,6 +344,7 @@ async function getLogs(req, res, next) {
 module.exports = {
   getDashboard,
   getGroups, createGroup, updateGroup, setGroupStatus, createGroupAdmin,
+  getGroupUsers, deleteUser,
   getPlans,  createPlan,  updatePlan,  deletePlan,
   getLogs,
 };

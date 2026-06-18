@@ -19,7 +19,8 @@ router.get   ('/gantt',               c.getGantt);
 router.get   ('/statistics', statsLimiter, c.getStatistics);
 
 router.get   ('/members',             c.getMembers);
-router.delete('/members/:userId',     c.removeMember);
+router.delete('/members/:userId',      c.removeMember);
+router.delete('/members/:userId/hard', c.deleteUser);
 
 router.post  ('/invite-codes',        c.createInviteCode);
 router.get   ('/invite-codes',        c.getInviteCodes);

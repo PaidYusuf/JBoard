@@ -67,6 +67,16 @@ export default function Members() {
     } catch { alert('Network error'); }
   }
 
+  async function handleDelete(m: Member) {
+    if (!confirm(`Permanently delete ${m.fname} ${m.lname}?\n\nThis cannot be undone. All their tasks and files will remain but the account will be gone.`)) return;
+    try {
+      const res = await fetch(`/api/admin/members/${m.user_id}/hard`, { method: 'DELETE', credentials: 'include' });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || 'Failed to delete user'); return; }
+      load();
+    } catch { alert('Network error'); }
+  }
+
   async function generateCode() {
     setGenerating(true);
     try {
@@ -140,9 +150,10 @@ export default function Members() {
                   </td>
                   <td>
                     {m.user_id !== Number(me?.userId) && (
-                      <button className="action-btn action-btn-danger" onClick={() => handleRemove(m)}>
-                        Remove
-                      </button>
+                      <div className="actions-cell">
+                        <button className="action-btn action-btn-warning" onClick={() => handleRemove(m)}>Deactivate</button>
+                        <button className="action-btn action-btn-danger"  onClick={() => handleDelete(m)}>Delete</button>
+                      </div>
                     )}
                   </td>
                 </tr>

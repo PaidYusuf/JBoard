@@ -46,6 +46,10 @@ export default function Groups() {
   const [adminError,  setAdminError]  = useState('');
   const [adminDone,   setAdminDone]   = useState(false);
 
+  const [usersGroup,   setUsersGroup]   = useState<Group | null>(null);
+  const [groupUsers,   setGroupUsers]   = useState<{user_id:number;fname:string;lname:string;email:string;role:string;is_active:boolean}[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+
   async function load() {
     setLoading(true);
     try {
@@ -133,6 +137,29 @@ export default function Groups() {
     setAdminDone(false);
   }
 
+  async function openUsersModal(g: Group) {
+    setUsersGroup(g);
+    setUsersLoading(true);
+    setGroupUsers([]);
+    try {
+      const res  = await fetch(`/api/superadmin/groups/${g.group_id}/users`, { credentials: 'include' });
+      const data = await res.json();
+      if (res.ok) setGroupUsers(data);
+    } catch { /* ignore */ }
+    finally { setUsersLoading(false); }
+  }
+
+  async function handleDeleteUser(userId: number, name: string) {
+    if (!confirm(`Permanently delete ${name}?\n\nThis cannot be undone.`)) return;
+    try {
+      const res  = await fetch(`/api/superadmin/users/${userId}`, { method: 'DELETE', credentials: 'include' });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || 'Failed to delete user'); return; }
+      setGroupUsers(prev => prev.filter(u => u.user_id !== userId));
+      load();
+    } catch { alert('Network error'); }
+  }
+
   async function handleCreateAdmin(e: React.FormEvent) {
     e.preventDefault();
     if (!adminGroup) return;
@@ -209,6 +236,7 @@ export default function Groups() {
                   <td>
                     <div className="actions-cell">
                       <button className="action-btn action-btn-edit" onClick={() => openEdit(g)}>Edit</button>
+                      <button className="action-btn action-btn-edit" onClick={() => openUsersModal(g)}>Users</button>
                       <button className="action-btn action-btn-success" onClick={() => openAdminModal(g)}>+ Admin</button>
                       {g.status === 'active'
                         ? <button className="action-btn action-btn-warning" onClick={() => handleToggleStatus(g)}>Suspend</button>
@@ -272,6 +300,34 @@ export default function Groups() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Users modal */}
+      <Modal open={!!usersGroup} title={`Users — ${usersGroup?.group_name}`} onClose={() => setUsersGroup(null)}>
+        {usersLoading ? (
+          <div style={{ textAlign: 'center', padding: 20 }}>
+            <div className="spinner" style={{ width: 28, height: 28, borderWidth: 3, color: 'var(--color-primary)', display: 'inline-block' }} />
+          </div>
+        ) : groupUsers.length === 0 ? (
+          <div style={{ color: 'var(--color-text-muted)', fontSize: 13, padding: '8px 0' }}>No users in this group yet.</div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {groupUsers.map(u => (
+              <div key={u.user_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--color-border)' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{u.fname} {u.lname}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{u.email}</div>
+                </div>
+                <span className={`badge ${u.role === 'admin' ? 'badge-purple' : 'badge-gray'}`}>{u.role}</span>
+                <span className={`badge ${u.is_active ? 'badge-green' : 'badge-red'}`}>{u.is_active ? 'Active' : 'Inactive'}</span>
+                <button className="action-btn action-btn-danger" onClick={() => handleDeleteUser(u.user_id, `${u.fname} ${u.lname}`)}>Delete</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="modal-actions" style={{ marginTop: 16 }}>
+          <button className="btn btn-secondary" onClick={() => setUsersGroup(null)}>Close</button>
+        </div>
       </Modal>
 
       {/* Create Admin modal */}

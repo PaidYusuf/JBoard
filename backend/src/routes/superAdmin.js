@@ -14,6 +14,8 @@ router.post  ('/groups',                 c.createGroup);
 router.patch ('/groups/:groupId',        c.updateGroup);
 router.patch ('/groups/:groupId/suspend',c.setGroupStatus);
 router.post  ('/groups/:groupId/admin',  c.createGroupAdmin);
+router.get   ('/groups/:groupId/users',  c.getGroupUsers);
+router.delete('/users/:userId',          c.deleteUser);
 
 router.get   ('/plans',                  c.getPlans);
 router.post  ('/plans',                  c.createPlan);

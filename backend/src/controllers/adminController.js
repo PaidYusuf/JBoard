@@ -263,6 +263,31 @@ async function removeMember(req, res, next) {
   }
 }
 
+// ── DELETE /api/admin/members/:userId/hard ───────────────────────────────────
+async function deleteUser(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const groupId = req.user.group_id;
+
+    if (parseInt(userId, 10) === req.user.user_id) {
+      return res.status(400).json({ error: 'You cannot delete yourself' });
+    }
+
+    const check = await pool.query(
+      'SELECT email FROM users WHERE user_id = $1 AND group_id = $2',
+      [userId, groupId]
+    );
+    if (!check.rows.length) return res.status(404).json({ error: 'User not found in your group' });
+
+    await pool.query('DELETE FROM users WHERE user_id = $1', [userId]);
+
+    logEvent(req.user.user_id, LOG_TYPES.GROUP, `Deleted user ${userId} (${check.rows[0].email}) from group ${groupId}`);
+    res.json({ message: 'User deleted' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // ── POST /api/admin/invite-codes ─────────────────────────────────────────────
 async function createInviteCode(req, res, next) {
   try {
@@ -357,6 +382,6 @@ module.exports = {
   downloadFile,
   getGantt,
   getStatistics,
-  getMembers, removeMember,
+  getMembers, removeMember, deleteUser,
   createInviteCode, getInviteCodes,
 };
