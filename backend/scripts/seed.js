@@ -2,8 +2,8 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const pool = require('../src/db/pool');
 
-const SUPERADMIN_EMAIL    = 'superadmin@jboard.local';
-const SUPERADMIN_PASSWORD = 'SuperAdmin1234!';
+const SUPERADMIN_EMAIL    = process.env.SUPERADMIN_EMAIL    || 'superadmin@jboard.local';
+const SUPERADMIN_PASSWORD = process.env.SUPERADMIN_PASSWORD || 'SuperAdmin1234!';
 
 async function seed() {
   const client = await pool.connect();
