@@ -21,6 +21,7 @@ interface Group {
 }
 
 const EMPTY_CREATE = { name: '', planId: '', type: 'company' };
+const EMPTY_ADMIN  = { email: '', password: '', fname: '', lname: '' };
 
 export default function Groups() {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -38,6 +39,12 @@ export default function Groups() {
   const [editPlanId, setEditPlanId] = useState('');
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
+
+  const [adminGroup,  setAdminGroup]  = useState<Group | null>(null);
+  const [adminForm,   setAdminForm]   = useState(EMPTY_ADMIN);
+  const [adminSaving, setAdminSaving] = useState(false);
+  const [adminError,  setAdminError]  = useState('');
+  const [adminDone,   setAdminDone]   = useState(false);
 
   async function load() {
     setLoading(true);
@@ -119,6 +126,33 @@ export default function Groups() {
     setEditGroup(g);
   }
 
+  function openAdminModal(g: Group) {
+    setAdminGroup(g);
+    setAdminForm(EMPTY_ADMIN);
+    setAdminError('');
+    setAdminDone(false);
+  }
+
+  async function handleCreateAdmin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!adminGroup) return;
+    setAdminError('');
+    setAdminSaving(true);
+    try {
+      const res  = await fetch(`/api/superadmin/groups/${adminGroup.group_id}/admin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(adminForm),
+      });
+      const data = await res.json();
+      if (!res.ok) { setAdminError(data.error || 'Failed to create admin'); return; }
+      setAdminDone(true);
+      load();
+    } catch { setAdminError('Network error'); }
+    finally { setAdminSaving(false); }
+  }
+
   if (loading) return <div className="view-loading"><div className="spinner" style={{ width: 32, height: 32, borderWidth: 3, color: 'var(--color-primary)' }} /></div>;
 
   return (
@@ -175,6 +209,7 @@ export default function Groups() {
                   <td>
                     <div className="actions-cell">
                       <button className="action-btn action-btn-edit" onClick={() => openEdit(g)}>Edit</button>
+                      <button className="action-btn action-btn-success" onClick={() => openAdminModal(g)}>+ Admin</button>
                       {g.status === 'active'
                         ? <button className="action-btn action-btn-warning" onClick={() => handleToggleStatus(g)}>Suspend</button>
                         : <button className="action-btn action-btn-success" onClick={() => handleToggleStatus(g)}>Activate</button>
@@ -237,6 +272,54 @@ export default function Groups() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Create Admin modal */}
+      <Modal open={!!adminGroup} title={`Create Admin — ${adminGroup?.group_name}`} onClose={() => setAdminGroup(null)}>
+        {adminDone ? (
+          <div>
+            <div className="alert alert-success" style={{ marginBottom: 16 }}>
+              Admin account created successfully!
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 20 }}>
+              Share these credentials with the admin securely. They should change their password on first login.
+            </div>
+            <div className="modal-actions">
+              <button className="btn btn-primary btn-sm" onClick={() => setAdminGroup(null)}>Done</button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {adminError && <div className="alert alert-error">{adminError}</div>}
+            <form onSubmit={handleCreateAdmin} noValidate>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>First Name</label>
+                  <input value={adminForm.fname} onChange={e => setAdminForm(p => ({ ...p, fname: e.target.value }))} required disabled={adminSaving} />
+                </div>
+                <div className="form-group">
+                  <label>Last Name</label>
+                  <input value={adminForm.lname} onChange={e => setAdminForm(p => ({ ...p, lname: e.target.value }))} required disabled={adminSaving} />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input type="email" value={adminForm.email} onChange={e => setAdminForm(p => ({ ...p, email: e.target.value }))} required disabled={adminSaving} />
+              </div>
+              <div className="form-group">
+                <label>Password</label>
+                <input type="password" value={adminForm.password} onChange={e => setAdminForm(p => ({ ...p, password: e.target.value }))} required disabled={adminSaving} minLength={8} placeholder="Min. 8 characters" />
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setAdminGroup(null)} disabled={adminSaving}>Cancel</button>
+                <button type="submit" className="btn btn-primary btn-sm"
+                  disabled={adminSaving || !adminForm.email || !adminForm.password || !adminForm.fname || !adminForm.lname}>
+                  {adminSaving ? <><span className="spinner" /> Creating…</> : 'Create Admin'}
+                </button>
+              </div>
+            </form>
+          </>
+        )}
       </Modal>
 
       {/* Edit modal */}

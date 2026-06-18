@@ -13,6 +13,7 @@ router.get   ('/groups',                 c.getGroups);
 router.post  ('/groups',                 c.createGroup);
 router.patch ('/groups/:groupId',        c.updateGroup);
 router.patch ('/groups/:groupId/suspend',c.setGroupStatus);
+router.post  ('/groups/:groupId/admin',  c.createGroupAdmin);
 
 router.get   ('/plans',                  c.getPlans);
 router.post  ('/plans',                  c.createPlan);

@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const pool = require('../db/pool');
 const { logEvent, LOG_TYPES } = require('../services/logger');
 
@@ -121,6 +122,40 @@ async function setGroupStatus(req, res, next) {
 
     logEvent(req.user.user_id, LOG_TYPES.GROUP, `Set group ${groupId} status to ${status}`);
     res.json(rows[0]);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ── POST /api/superadmin/groups/:groupId/admin ───────────────────────────────
+async function createGroupAdmin(req, res, next) {
+  try {
+    const { groupId } = req.params;
+    const { email, password, fname, lname } = req.body;
+
+    if (!email || !password || !fname || !lname) {
+      return res.status(400).json({ error: 'email, password, fname, and lname are required' });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    const group = await pool.query('SELECT * FROM groups WHERE group_id = $1', [groupId]);
+    if (!group.rows.length) return res.status(404).json({ error: 'Group not found' });
+
+    const existing = await pool.query('SELECT user_id FROM users WHERE email = $1', [email]);
+    if (existing.rows.length) return res.status(409).json({ error: 'Email already in use' });
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const { rows } = await pool.query(
+      `INSERT INTO users (group_id, email, password_hash, fname, lname, role, account_type, is_active)
+       VALUES ($1, $2, $3, $4, $5, 'admin', 'solo', true)
+       RETURNING user_id, email, fname, lname, role`,
+      [groupId, email, passwordHash, fname, lname]
+    );
+
+    logEvent(req.user.user_id, LOG_TYPES.GROUP, `Created admin ${email} for group ${groupId}`);
+    res.status(201).json(rows[0]);
   } catch (err) {
     next(err);
   }
@@ -271,7 +306,7 @@ async function getLogs(req, res, next) {
 
 module.exports = {
   getDashboard,
-  getGroups, createGroup, updateGroup, setGroupStatus,
+  getGroups, createGroup, updateGroup, setGroupStatus, createGroupAdmin,
   getPlans,  createPlan,  updatePlan,  deletePlan,
   getLogs,
 };
