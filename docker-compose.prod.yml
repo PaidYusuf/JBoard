@@ -41,7 +41,7 @@ services:
     environment:
       NODE_ENV: production
     volumes:
-      - uploads_data:/app/uploads
+      - ./uploads:/app/uploads
     # No external port — only nginx can reach it
     depends_on:
       postgres:
@@ -81,4 +81,3 @@ services:
 volumes:
   postgres_data:
   redis_data:
-  uploads_data:
